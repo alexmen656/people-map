@@ -2,20 +2,20 @@
   <div id="app">
     <div class="container">
       <header class="app-header">
-      <h1>Where Are You From? - Interactive Pirates Map</h1>
-      <p class="app-description">
-          Mark your location on the map and see where other pirates are from. Let's chart our global pirate community!
+        <h1>{{ $t("title") }}</h1>
+        <p class="app-description">
+          {{ $t("description") }}
         </p>
-    </header>
+      </header>
       <div id="map" style="width: 100%; height: 100vh"></div>
-      <RangList class="rang-list" />     
+      <RangList class="rang-list" />
       <div class="map-legend"></div>
     </div>
   </div>
 </template>
 
 <script>
-import RangList from './components/RangList.vue';
+import RangList from "./components/RangList.vue";
 
 export default {
   name: "App",
@@ -23,6 +23,10 @@ export default {
     RangList,
   },
   mounted() {
+    if (localStorage.getItem("language") === null) {
+      localStorage.setItem("language", "en");
+    }
+    this.$i18n.locale = localStorage.getItem("language");
     this.initMap();
   },
   methods: {
@@ -38,15 +42,15 @@ export default {
         });
     },
     async initMap() {
-       await  window.mapkit.init({
-          authorizationCallback: function (done) {
-            fetch("https://alex.polan.sk/people-map/verify.php")
-              .then((res) => res.text())
-              .then(done);
-          },
-          language: "en",
-        });
-     
+      await window.mapkit.init({
+        authorizationCallback: function (done) {
+          fetch("https://alex.polan.sk/people-map/verify.php")
+            .then((res) => res.text())
+            .then(done);
+        },
+        language: "en",
+      });
+
       const MAP_COLORS = [
         {
           color: "#fcc5c0",
@@ -55,36 +59,40 @@ export default {
         },
         {
           color: "#fa9fb5",
-          range: "10+",
+          range: "1+",
           num: 10,
         },
         {
           color: "#f768a1",
-          range: "30+",
+          range: "10+",
           num: 30,
         },
         {
           color: "#dd3497",
-          range: "50+",
+          range: "30+",
           num: 50,
         },
         {
           color: "#ae017e",
-          range: "100+",
+          range: "50+",
           num: 100,
+        },
+        {
+          color: "#7a0177",
+          range: "100+",
+          num: Infinity,
         },
       ];
 
-      var region = new window.mapkit.CoordinateRegion(
-    new window.mapkit.Coordinate(0.0, 180.0), // Zentrum der Karte: Äquator und Nullmeridian
-    new window.mapkit.CoordinateSpan(180.0, 360.0) // Weltkarte, zeigt die gesamte Erde
-);
+      const region = new window.mapkit.CoordinateRegion(
+        new window.mapkit.Coordinate(0.0, 180.0),
+        new window.mapkit.CoordinateSpan(180.0, 360.0)
+      );
 
-
-      var map = new window.mapkit.Map("map", {
+      const map = new window.mapkit.Map("map", {
         mapType: window.mapkit.Map.MapTypes.Satellite,
-        center: new window.mapkit.Coordinate(0.0, 0.0), // Zentrum der Karte: Äquator + Nullmeridian
-        region: region, // Definierte Region
+        center: new window.mapkit.Coordinate(0.0, 0.0),
+        region: region,
         ///showsUserLocation: true,
         showsUserLocationControl: true,
       });
@@ -103,11 +111,9 @@ export default {
           return overlay;
         },
 
-        //From demo
         itemForFeature: function (overlay, geoJSON) {
-          var counter = geoJSON.properties.count;
+          const counter = geoJSON.properties.count;
 
-          // Add data to the overlay to be shown when it is selected.
           overlay.data = {
             name: geoJSON.properties.name,
             counter: geoJSON.properties.count,
@@ -142,7 +148,7 @@ export default {
       var mapLegend = document.querySelector(".map-legend");
 
       function addLegend() {
-        var el, textNode;
+        let el, textNode;
         MAP_COLORS.forEach(function (mColor) {
           el = document.createElement("div");
           textNode = document.createTextNode(mColor.range);
@@ -166,30 +172,41 @@ export default {
         if (event.overlay) {
           console.log("You selected an overlay. " + country);
 
-          // Submit data to backend using axios
-          this.$axios
-            .post(
-              "data.php",
-              this.$qs.stringify({
-                country: country,
-              })
-            )
-            .then((response) => {
-              console.log(response.data);
-              if (response.data.status === "success") {
-                alert("Data submitted successfully");
+          if (
+            !localStorage.getItem("voted") ||
+            localStorage.getItem("voted") !== "true"
+          ) {
+            // Submit data to backend using axios
+            this.$axios
+              .post(
+                "data.php",
+                this.$qs.stringify({
+                  country: country,
+                })
+              )
+              .then((response) => {
+                console.log(response.data);
+                if (response.data.status === "success") {
+                  localStorage.setItem("voted", "true");
+                  alert("Data submitted successfully");
 
-                window.mapkit.importGeoJSON(
-                  "https://alex.polan.sk/people-map/countries.php",
-                  geoJSONParserDelegate
-                );
-              } else {
-                alert("Error: " + response.data.message);
-              }
-            })
-            .catch((error) => {
-              console.error("Error:", error);
-            });
+                  // Clear existing overlays
+                  map.overlays.forEach((overlay) => map.removeOverlay(overlay));
+
+                  window.mapkit.importGeoJSON(
+                    "https://alex.polan.sk/people-map/countries.php",
+                    geoJSONParserDelegate
+                  );
+                } else {
+                  alert("Error: " + response.data.message);
+                }
+              })
+              .catch((error) => {
+                console.error("Error:", error);
+              });
+          } else {
+            alert("You have already voted");
+          }
         }
       });
     },
@@ -209,8 +226,8 @@ html {
   height: 100%;
   padding: 0;
   margin: 0;
-  font-family: ui-sans-serif, system-ui, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
-
+  font-family: ui-sans-serif, system-ui, sans-serif, Apple Color Emoji,
+    Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
 }
 
 .container .map-legend {
@@ -242,7 +259,11 @@ html {
   text-align: center;
   justify-content: center;
   width: 100%;
-  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0)); /* Gradient shadow from top */
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.6),
+    rgba(0, 0, 0, 0)
+  ); /* Gradient shadow from top */
   margin-bottom: 10px;
 }
 

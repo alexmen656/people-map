@@ -3,6 +3,10 @@ header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json");
 
 $config = include('config.php');
+$host = $config['host'];
+$dbname = $config['dbname'];
+$username = $config['username'];
+$password = $config['password'];
 
 try {
     $pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
@@ -27,20 +31,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($country) {
         try {
-            $stmt = $pdo->prepare("SELECT COUNT(*) FROM users WHERE ip_address = :ip_address");
-            $stmt->bindParam(':ip_address', $ip_address);
-            $stmt->execute();
-            $count = $stmt->fetchColumn();
+            // Disabled because two users could have the same public IP
+            /*   $stmt = $pdo->prepare("SELECT COUNT(*) FROM users WHERE ip_address = :ip_address");
+               $stmt->bindParam(':ip_address', $ip_address);
+               $stmt->execute();
+               $count = $stmt->fetchColumn();
 
-            if ($count == 0) {
-                $stmt = $pdo->prepare("INSERT INTO users (country, ip_address) VALUES (:country, :ip_address)");
-                $stmt->bindParam(':country', $country);
-                $stmt->bindParam(':ip_address', $ip_address);
-                $stmt->execute();
-                echo json_encode(['status' => 'success', 'message' => 'User added successfully']);
-            } else {
-                echo json_encode(['status' => 'error', 'message' => 'IP address has already submitted data']);
-            }
+               if ($count == 0) {*/
+            $stmt = $pdo->prepare("INSERT INTO users (country) VALUES (:country)");//, ip_address | , :ip_address
+            $stmt->bindParam(':country', $country);
+            //$stmt->bindParam(':ip_address', $ip_address);
+            $stmt->execute();
+            echo json_encode(['status' => 'success', 'message' => 'User added successfully']);
+            /*  } else {
+                  echo json_encode(['status' => 'error', 'message' => 'IP address has already submitted data']);
+              }*/
         } catch (PDOException $e) {
             echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
         }

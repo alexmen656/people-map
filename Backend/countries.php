@@ -4,6 +4,10 @@ header("Content-Type: application/json");
 
 $json_file_path = 'data/countries.geojson';
 $config = include('config.php');
+$host = $config['host'];
+$dbname = $config['dbname'];
+$username = $config['username'];
+$password = $config['password'];
 
 try {
     $pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
@@ -33,6 +37,6 @@ if (file_exists($json_file_path)) {
 
     echo json_encode($geojson);
 } else {
-    echo json_encode(['error' => 'Datei nicht gefunden']);
+    echo json_encode(['error' => 'File not found']);
 }
 ?>

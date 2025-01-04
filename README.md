@@ -28,7 +28,7 @@ Todos:
 -Add deselect country x
 -Add Legend _/
 -Add Ranking _/
--Add Cookie to prevent double-submit
+-Add Cookie to prevent double-submit _/
 -Add Meta data
 -Add Site Heading _/
--Mult-lang
+-Multi-lang _/
