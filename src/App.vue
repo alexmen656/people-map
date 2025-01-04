@@ -36,8 +36,15 @@ export default {
         });
     },
     async initMap() {
-      const LINE_WIDTH_DEFAULT = 0.5;
-
+       await  window.mapkit.init({
+          authorizationCallback: function (done) {
+            fetch("https://alex.polan.sk/people-map/verify.php")
+              .then((res) => res.text())
+              .then(done);
+          },
+          language: "en",
+        });
+     
       const MAP_COLORS = [
         {
           color: "#fcc5c0",
@@ -67,16 +74,17 @@ export default {
       ];
 
       var region = new window.mapkit.CoordinateRegion(
-        new window.mapkit.Coordinate(20.0, 0.0),
-        new window.mapkit.CoordinateSpan(140.0, 360.0)
-      );
+    new window.mapkit.Coordinate(0.0, 180.0), // Zentrum der Karte: Äquator und Nullmeridian
+    new window.mapkit.CoordinateSpan(180.0, 360.0) // Weltkarte, zeigt die gesamte Erde
+);
+
 
       var map = new window.mapkit.Map("map", {
         mapType: window.mapkit.Map.MapTypes.Satellite,
-        center: new window.mapkit.Coordinate(47.3769, 8.5417),
-        region: region,
+        center: new window.mapkit.Coordinate(0.0, 0.0), // Zentrum der Karte: Äquator + Nullmeridian
+        region: region, // Definierte Region
         ///showsUserLocation: true,
-        //showsUserLocationControl: true,
+        showsUserLocationControl: true,
       });
 
       let geoJSONParserDelegate = {
@@ -108,7 +116,7 @@ export default {
             if (counter < MAP_COLORS[i].num) {
               overlay.style = new window.mapkit.Style({
                 fillOpacity: 0.7,
-                lineWidth: LINE_WIDTH_DEFAULT,
+                lineWidth: 0.5,
                 fillColor: MAP_COLORS[i].color,
               });
               break;
