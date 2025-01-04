@@ -1,5 +1,5 @@
 const fs = require('fs');
-const geoJSONPath = '/Users/alexpolan/map-project/Backend/countries.geojson';
+const geoJSONPath = './original.geojson';
 
 fs.readFile(geoJSONPath, 'utf8', (err, data) => {
   if (err) {
@@ -48,7 +48,7 @@ fs.readFile(geoJSONPath, 'utf8', (err, data) => {
 
   // Save the updated GeoJSON file
   fs.writeFile(
-    geoJSONPath,
+    "countries.json",
     JSON.stringify(geoJSON, null, 2),
     'utf8',
     (writeErr) => {

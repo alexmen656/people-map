@@ -25,7 +25,10 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
 
 
 Todos:
--Add deselect country
+-Add deselect country x
 -Add Legend _/
--Add Ranking
+-Add Ranking _/
 -Add Cookie to prevent double-submit
+-Add Meta data
+-Add Site Heading _/
+-Mult-lang

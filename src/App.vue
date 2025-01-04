@@ -1,25 +1,27 @@
 <template>
   <div id="app">
     <div class="container">
+      <header class="app-header">
+      <h1>Where Are You From? - Interactive Pirates Map</h1>
+      <p class="app-description">
+          Mark your location on the map and see where other pirates are from. Let's chart our global pirate community!
+        </p>
+    </header>
       <div id="map" style="width: 100%; height: 100vh"></div>
-      <div id="infoPopup">
-        <div class="info">
-          <span>State:</span>
-          <span class="info-country"></span>
-        </div>
-        <div class="info">
-          <span>Population:</span>
-          <span class="info-population"></span>
-        </div>
-      </div>
+      <RangList class="rang-list" />     
       <div class="map-legend"></div>
     </div>
   </div>
 </template>
 
 <script>
+import RangList from './components/RangList.vue';
+
 export default {
   name: "App",
+  components: {
+    RangList,
+  },
   mounted() {
     this.initMap();
   },
@@ -207,13 +209,15 @@ html {
   height: 100%;
   padding: 0;
   margin: 0;
+  font-family: ui-sans-serif, system-ui, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
+
 }
 
 .container .map-legend {
   position: absolute;
-  z-index: 1000;
-  top: 7px;
-  left: 7px;
+  z-index: 1005;
+  top: 15px;
+  left: 15px;
 }
 
 .map-legend div {
@@ -222,41 +226,48 @@ html {
   font-size: 12px;
   color: #fff;
   padding: 4px 7px;
-}
-
-#infoPopup {
-  display: none;
-  top: 7px;
-  left: 67px;
-  background: #ffffff;
-  padding: 5px 15px;
-  position: absolute;
-  z-index: 1000;
-  min-width: 180px;
-  font: 13px/16px "-apple-system-font", "HelveticaNeue-Medium", "Helvetica",
-    "Arial", "sans-serif";
-  color: #212121;
-  border: 1px solid rgba(0, 0, 0, 0.2);
-  border-radius: 3px;
+  border-radius: 5px;
 }
 
 .container {
   position: relative;
 }
 
-#infoPopup .info {
-  padding: 10px 0;
-  box-sizing: border-box;
+.app-header {
+  text-align: center;
+  margin: 0;
+  z-index: 1001; /* Ensure the header is above other elements */
+  position: absolute;
+  background-color: transparent; /* Completely transparent background */
+  text-align: center;
+  justify-content: center;
+  width: 100%;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0)); /* Gradient shadow from top */
+  margin-bottom: 10px;
 }
 
-#infoPopup .info:first-child {
-  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+.app-header h1 {
+  font-size: 2em;
+  color: #fff;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+  margin-bottom: 5px;
 }
 
-#infoPopup .info-country,
-#infoPopup .info-population {
-  margin-left: 5px;
-  color: #464545;
-  font-style: italic;
+.app-description {
+  font-size: 1.2em;
+  color: #fff;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.5;
+  padding: 0 20px;
+  margin-top: 5px;
+}
+
+/*class="mk-top-right-controls-container mk-top-right-controls-container-children-two mk-controls-container-controls-larger"*/
+
+.mk-top-right-controls-container {
+  z-index: 1010;
 }
 </style>

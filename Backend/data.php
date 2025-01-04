@@ -2,13 +2,8 @@
 header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json");
 
-// Database configuration
-$host = '*****';
-$dbname = '*****';
-$username = '*****';
-$password = '*****';
+$config = include('config.php');
 
-// Create a new PDO instance
 try {
     $pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -16,7 +11,6 @@ try {
     die("Could not connect to the database: " . $e->getMessage());
 }
 
-// Handle GET request to fetch user count by country
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     try {
         $stmt = $pdo->query("SELECT country, COUNT(*) as user_count FROM users GROUP BY country");
@@ -27,14 +21,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     }
 }
 
-// Handle POST request to insert new user data
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $country = $_POST['country'];
     $ip_address = $_SERVER['REMOTE_ADDR'];
 
     if ($country) {
         try {
-            // Check if the IP address has already submitted data
             $stmt = $pdo->prepare("SELECT COUNT(*) FROM users WHERE ip_address = :ip_address");
             $stmt->bindParam(':ip_address', $ip_address);
             $stmt->execute();
