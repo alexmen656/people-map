@@ -6,6 +6,31 @@
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <link rel="icon" href="<%= BASE_URL %>favicon.ico">
     <title><%= htmlWebpackPlugin.options.title %></title>
+
+    <script>
+      function loadAppleMapsScript(callback) {
+        var script = document.createElement("script");
+        script.src = "https://cdn.apple-mapkit.com/mk/5.x.x/mapkit.js";//.core
+      //  script.setAttribute('data-libraries', 'services,full-map,annotations');
+        script.onload = callback;
+        document.head.appendChild(script);
+      }
+
+      function initializeMapKit() {
+        mapkit.init({
+          authorizationCallback: function (done) {
+            fetch("https://alex.polan.sk/people-map/verify.php")
+              .then((res) => res.text())
+              .then(done);
+          },
+          language: "en",
+        });
+      }
+
+      // Load Apple Maps Script and initializeMapKit
+      loadAppleMapsScript(initializeMapKit);
+    </script>
+    
   </head>
   <body>
     <noscript>
