@@ -1,9 +1,7 @@
 <?php
-// Setze die Header, um CORS zu erlauben
-header("Access-Control-Allow-Origin: *"); // Ermöglicht den Zugriff von allen Ursprüngen
-header("Content-Type: application/json"); // Setzt den Content-Type auf JSON
+header("Access-Control-Allow-Origin: *");
+header("Content-Type: application/json");
 
-// Der Pfad zur JSON-Datei
 $json_file_path = 'countries.geojson';
 
 // Database configuration
