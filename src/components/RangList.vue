@@ -3,14 +3,25 @@
     <h2>{{ $t("ranglist") }}</h2>
     <ul>
       <li v-for="(country, index) in sortedUserCounts" :key="index">
-        {{ index + 1 }}. {{ country.country }} ({{ country.user_count }})
+        <span>{{ index + 1 }}.</span> <span>{{ country.country }}</span> <span>({{ country.user_count }})</span>
       </li>
     </ul>
-    <h4>Language: <span @click="changeLanguage('en')" :class="isActiveLanguage('en')">EN</span> | <span @click="changeLanguage('de')" :class="isActiveLanguage('de')">DE</span></h4>
+    <h4>
+      Language:
+      <span @click="changeLanguage('en')" :class="isActiveLanguage('en')"
+        >EN</span
+      >
+      |
+      <span @click="changeLanguage('de')" :class="isActiveLanguage('de')"
+        >DE</span
+      >
+    </h4>
   </div>
 </template>
 
 <script>
+import { eventBus } from "@/eventBus";
+
 export default {
   name: "RangList",
   data() {
@@ -26,12 +37,19 @@ export default {
   },
   mounted() {
     this.fetchUserCounts();
+
+    eventBus.on("update", () => {
+      this.fetchUserCounts();
+    });
+  },
+  beforeUnmount() {
+    eventBus.off("signal"); // Entfernt den Listener, um Speicherlecks zu vermeiden
   },
   methods: {
     changeLanguage(lang) {
       this.$i18n.locale = lang;
       localStorage.setItem("language", lang);
-      this.currentLanguage = lang; 
+      this.currentLanguage = lang;
     },
     fetchUserCounts() {
       this.$axios
@@ -44,7 +62,7 @@ export default {
         });
     },
     isActiveLanguage(lang) {
-      return this.currentLanguage === lang ? 'active-language' : '';
+      return this.currentLanguage === lang ? "active-language" : "";
     },
   },
 };
@@ -82,10 +100,12 @@ export default {
   position: relative;
   margin: 10px 0;
   padding: 5px;
-  background-color: rgba(169, 169, 169, 0.9);
+  background-color: rgba(70, 70, 70, 0.9);
   border-radius: 8px;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
   color: #fff;
+  display: flex;
+  justify-content: space-between;  
 }
 
 .rang-list h4 {

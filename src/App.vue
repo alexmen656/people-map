@@ -15,7 +15,8 @@
 </template>
 
 <script>
-import RangList from "./components/RangList.vue";
+import RangList from "@/components/RangList.vue";
+import { eventBus } from '@/eventBus';
 
 export default {
   name: "App",
@@ -30,17 +31,6 @@ export default {
     this.initMap();
   },
   methods: {
-    fetchUserCounts() {
-      this.$axios
-        .get("http://localhost/path/to/your/backend/data.php")
-        .then((response) => {
-          this.userCounts = response.data;
-          console.log(this.userCounts);
-        })
-        .catch((error) => {
-          console.error("Error fetching user counts:", error);
-        });
-    },
     async initMap() {
       await window.mapkit.init({
         authorizationCallback: function (done) {
@@ -85,16 +75,16 @@ export default {
       ];
 
       const region = new window.mapkit.CoordinateRegion(
-        new window.mapkit.Coordinate(0.0, 180.0),
+        new window.mapkit.Coordinate(25.0, 15.0),
         new window.mapkit.CoordinateSpan(180.0, 360.0)
       );
 
       const map = new window.mapkit.Map("map", {
         mapType: window.mapkit.Map.MapTypes.Satellite,
-        center: new window.mapkit.Coordinate(0.0, 0.0),
+        center: new window.mapkit.Coordinate(25.0, 15.0),
         region: region,
         ///showsUserLocation: true,
-        showsUserLocationControl: true,
+        //showsUserLocationControl: true,
       });
 
       let geoJSONParserDelegate = {
@@ -188,7 +178,8 @@ export default {
                 console.log(response.data);
                 if (response.data.status === "success") {
                   localStorage.setItem("voted", "true");
-                  alert("Data submitted successfully");
+                  eventBus.emit('update');
+                  //alert("Data submitted successfully");
 
                   // Clear existing overlays
                   map.overlays.forEach((overlay) => map.removeOverlay(overlay));
@@ -205,7 +196,7 @@ export default {
                 console.error("Error:", error);
               });
           } else {
-            alert("You have already voted");
+            alert("You have already selected a country.");
           }
         }
       });
@@ -228,6 +219,7 @@ html {
   margin: 0;
   font-family: ui-sans-serif, system-ui, sans-serif, Apple Color Emoji,
     Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
+  cursor: pointer;
 }
 
 .container .map-legend {
