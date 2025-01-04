@@ -22,3 +22,10 @@ npm run lint
 
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
+
+
+Todos:
+-Add deselect country
+-Add Legend _/
+-Add Ranking
+-Add Cookie to prevent double-submit

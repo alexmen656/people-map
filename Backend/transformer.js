@@ -41,7 +41,7 @@ fs.readFile(geoJSONPath, 'utf8', (err, data) => {
         name: feature.properties.name,
         coordinates: feature.geometry.coordinates,
       };
-      delete feature.properties.name;
+      //delete feature.properties.name;
     }
     return feature;
   });
