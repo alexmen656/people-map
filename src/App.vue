@@ -17,6 +17,7 @@
 <script>
 import RangList from "@/components/RangList.vue";
 import { eventBus } from "@/eventBus";
+import axios from "axios";
 
 export default {
   name: "App",
@@ -136,14 +137,6 @@ export default {
             fillColor: "#CACACA",
           });
           map.addOverlay(overlay);
-          overlay.addEventListener("mouseover", () => {
-            alert("You selected " + overlay.data.name);
-            overlay.style.fillColor = "rgba(255, 0, 0, 0.5)"; // Change the color and opacity as needed
-          });
-          overlay.addEventListener("mouseout", () => {
-            overlay.style.fillColor = "#CACACA"; // Revert to original color
-          });
-
           return overlay;
         },
 
@@ -162,17 +155,6 @@ export default {
                 fillOpacity: 0.7,
                 lineWidth: 0.5,
                 fillColor: MAP_COLORS[i].color,
-              });
-
-              //  overlay.classList.add("custom-pin");
-
-              overlay.addEventListener("mouseover", () => {
-                alert("You selected " + overlay.data.name);
-                overlay.style.fillColor = "rgba(255, 0, 0, 0.5)"; // Change the color and opacity as needed
-              });
-
-              overlay.addEventListener("mouseout", () => {
-                overlay.style.fillColor = "#CACACA"; // Revert to original color
               });
               break;
             }
@@ -238,17 +220,19 @@ export default {
                     if (response.data.status === "success") {
                       localStorage.setItem("voted", "true");
                       eventBus.emit("update");
-                      //alert("Data submitted successfully");
 
-                      // Clear existing overlays
-                      map.overlays.forEach((overlay) =>
-                        map.removeOverlay(overlay)
-                      );
+                      axios
+                        .get("https://alex.polan.sk/people-map/countries.php")
+                        .then((response) => {
+                          map.overlays.forEach((overlay) =>
+                            map.removeOverlay(overlay)
+                          );
 
-                      window.mapkit.importGeoJSON(
-                        "https://alex.polan.sk/people-map/countries.php",
-                        geoJSONParserDelegate
-                      );
+                          window.mapkit.importGeoJSON(
+                            response.data,
+                            geoJSONParserDelegate
+                          );
+                        });
                     } else {
                       alert("Error: " + response.data.message);
                     }
