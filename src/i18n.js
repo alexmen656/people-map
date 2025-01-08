@@ -10,9 +10,9 @@ const messages = {
   de: {
     title: "Woher kommst du? - Interaktive Piratenkarte",
     description:
-      "Markiere deinen Standort auf der Karte (klicke auf einen Staat). Zoome hinein, um dein Land leichter auszuwählen, und entdecke, woher die anderen Piraten stammen. Lass uns die Weltkarte unserer Piratencrew zeichnen!",
-    ranglist: "Anzahl der Piraten nach Land",
-  },
+      "Markiere deinen Standort auf der Karte (klicke auf einen Staat). Zoome hinein, um dein Land leichter auszuwählen, und entdecke, woher die anderen Piraten stammen. Lass uns die weltweite Piraten-Community kartieren! Du kannst auch benutzerdefinierte Pins hinzufügen, um etwas Besonderes hervorzuheben, wie deinen genauen Standort, dein Zuhause oder alles, was dir gefällt. Halte einfach *Shift* gedrückt und klicke irgendwo auf der Karte, um einen Pin zu setzen. Du kannst so viele Pins setzen, wie du möchtest!",
+    ranglist: "Piratenanzahl nach Land",
+  },  
 };
 
 const i18n = createI18n({

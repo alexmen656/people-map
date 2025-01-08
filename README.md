@@ -45,6 +45,7 @@ npm run lint
 
 ## Todos
 - Add deselect country x
+- Add Livechat x
 - Add Legend _/
 - Add Ranking _/
 - Add Cookie to prevent double-submit _/

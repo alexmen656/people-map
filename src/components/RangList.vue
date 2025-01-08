@@ -3,7 +3,7 @@
     <h2>{{ $t("ranglist") }}</h2>
     <ul>
       <li v-for="(country, index) in sortedUserCounts" :key="index">
-        <span>{{ index + 1 }}.</span> <span>{{ country.country }}</span> <span>({{ country.user_count }})</span>
+        <span>{{ index + 1 }}.</span> <span>{{ country.country.replace(" of America", "") }}</span> <span>({{ country.user_count }})</span>
       </li>
     </ul>
     <h4>
@@ -75,7 +75,7 @@ export default {
   right: 10px;
   transform: translateY(-50%);
   background-color: rgba(18, 18, 18, 0.6);
-  padding: 15px;
+  padding: 10px;
   border: none;
   border-radius: 16px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -100,10 +100,10 @@ export default {
 
 .rang-list li {
   position: relative;
-  margin: 10px 0;
+  margin: 5px 0;
   padding: 5px;
   background-color: rgba(70, 70, 70, 0.9);
-  border-radius: 8px;
+  border-radius: 10px;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
   color: #fff;
   display: flex;
