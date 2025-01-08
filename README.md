@@ -8,6 +8,7 @@ A fun and interactive world map where pirates from all over the globe can mark t
 - Zoom in to easily select your country and place your mark.
 - See where other pirates are from and discover the global pirate community.
 - Interactive and user-friendly interface powered by Apple Maps.
+- Hold the Shift key and click on the map to place a new pin.
 
 ## How to Use
 
@@ -15,40 +16,44 @@ A fun and interactive world map where pirates from all over the globe can mark t
 2. Zoom in for better accuracy when selecting your location.
 3. See the locations of other pirates from all around the world.
 4. Join the global pirate map by marking your spot!
+5. Additionally, you can hold the Shift key and click on the map to place a new pin.
 
 ## Tech Stack
 
 - **Frontend**: Vue.js, MapKit JS (Apple Maps)
 - **Event Bus**: Mitt (for communication between components)
-- **Other Libraries**: [List any additional libraries or tools you're using]
-
+- **Other Libraries**: i18n (for multi-language support)
 
 ## Project setup
+
 ```
 npm install
 ```
 
 ### Compiles and hot-reloads for development
+
 ```
 npm run serve
 ```
 
 ### Compiles and minifies for production
+
 ```
 npm run build
 ```
 
 ### Lints and fixes files
+
 ```
 npm run lint
 ```
 
 ## Todos
-- Add deselect country x
-- Add Livechat x
-- Add Legend _/
-- Add Ranking _/
-- Add Cookie to prevent double-submit _/
+
+- Add Legend \_/
+- Add Ranking \_/
+- Add Cookie to prevent double-submit \_/
 - Add Meta data
-- Add Site Heading _/
-- Multi-lang _/
+- Add Site Heading \_/
+- Multi-lang \_/
+- Add Livechat x (coming soon)
