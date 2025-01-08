@@ -24,6 +24,9 @@ A fun and interactive world map where pirates from all over the globe can mark t
 - **Event Bus**: Mitt (for communication between components)
 - **Other Libraries**: i18n (for multi-language support)
 
+## Feedback
+- If you have any feedback, feel free to contact me via Slack.
+
 ## Project setup
 
 ```
@@ -50,10 +53,10 @@ npm run lint
 
 ## Todos
 
-- Add Legend \_/
-- Add Ranking \_/
-- Add Cookie to prevent double-submit \_/
+- Add Legend _/
+- Add Ranking _/
+- Add Cookie to prevent double-submit _/
 - Add Meta data
-- Add Site Heading \_/
-- Multi-lang \_/
+- Add Site Heading _/
+- Multi-lang _/
 - Add Livechat x (coming soon)
