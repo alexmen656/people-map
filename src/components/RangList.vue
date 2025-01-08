@@ -80,6 +80,8 @@ export default {
   border-radius: 16px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   z-index: 1002;
+  max-height: 55%;
+  overflow: scroll;
 }
 
 .rang-list h2 {

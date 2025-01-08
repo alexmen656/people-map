@@ -16,12 +16,18 @@
 
 <script>
 import RangList from "@/components/RangList.vue";
-import { eventBus } from '@/eventBus';
+import { eventBus } from "@/eventBus";
 
 export default {
   name: "App",
   components: {
     RangList,
+  },
+  data() {
+    return {
+      isPlacingPin: false,
+      pins: [],
+    };
   },
   mounted() {
     if (localStorage.getItem("language") === null) {
@@ -32,6 +38,9 @@ export default {
   },
   methods: {
     async initMap() {
+      var MarkerAnnotation = window.mapkit.MarkerAnnotation,
+        clickAnnotation;
+
       await window.mapkit.init({
         authorizationCallback: function (done) {
           fetch("https://alex.polan.sk/people-map/verify.php")
@@ -55,21 +64,21 @@ export default {
         {
           color: "#f768a1",
           range: "10+",
-          num: 30,
+          num: 20,
         },
         {
           color: "#dd3497",
+          range: "20+",
+          num: 30,
+        },
+        {
+          color: "#ae017e",
           range: "30+",
           num: 50,
         },
         {
-          color: "#ae017e",
-          range: "50+",
-          num: 100,
-        },
-        {
           color: "#7a0177",
-          range: "100+",
+          range: "50+",
           num: Infinity,
         },
       ];
@@ -87,6 +96,36 @@ export default {
         //showsUserLocationControl: true,
       });
 
+      try {
+        const response = await this.$axios.get("pins.php");
+
+        if (response.data.error) {
+          console.error(response.data.error);
+          this.$router.push("/");
+          return;
+        }
+
+        this.pins = response.data;
+        if (this.pins.length > 0) {
+          this.pins.forEach((pin) => {
+            const coordinate = new window.mapkit.Coordinate(
+              Number(pin.latitude),
+              Number(pin.longitude)
+            );
+            const annotation = new window.mapkit.MarkerAnnotation(coordinate, {
+              title: pin.title,
+              // Maybe later :)
+              /*  color: "#160808",
+              glyphText: "🏠",*/
+            });
+            map.addAnnotation(annotation);
+          });
+        }
+      } catch (error) {
+        console.error("Error fetching bases:", error);
+        return;
+      }
+
       let geoJSONParserDelegate = {
         itemForPolygon: function (overlay) {
           overlay.style = new window.mapkit.Style({
@@ -97,6 +136,13 @@ export default {
             fillColor: "#CACACA",
           });
           map.addOverlay(overlay);
+          overlay.addEventListener("mouseover", () => {
+            alert("You selected " + overlay.data.name);
+            overlay.style.fillColor = "rgba(255, 0, 0, 0.5)"; // Change the color and opacity as needed
+          });
+          overlay.addEventListener("mouseout", () => {
+            overlay.style.fillColor = "#CACACA"; // Revert to original color
+          });
 
           return overlay;
         },
@@ -116,6 +162,17 @@ export default {
                 fillOpacity: 0.7,
                 lineWidth: 0.5,
                 fillColor: MAP_COLORS[i].color,
+              });
+
+              //  overlay.classList.add("custom-pin");
+
+              overlay.addEventListener("mouseover", () => {
+                alert("You selected " + overlay.data.name);
+                overlay.style.fillColor = "rgba(255, 0, 0, 0.5)"; // Change the color and opacity as needed
+              });
+
+              overlay.addEventListener("mouseout", () => {
+                overlay.style.fillColor = "#CACACA"; // Revert to original color
               });
               break;
             }
@@ -156,47 +213,83 @@ export default {
       );
 
       map.addEventListener("select", (event) => {
-        const country = event.overlay.data.name;
-        console.log(country);
+        if (!event.shiftKey && !this.isPlacingPin) {
+          const country = event.overlay.data.name;
+          console.log(country);
 
-        if (event.overlay) {
-          console.log("You selected an overlay. " + country);
+          if (event.overlay) {
+            if (confirm("You selected " + country)) {
+              console.log("You selected an overlay. " + country);
 
-          if (
-            !localStorage.getItem("voted") ||
-            localStorage.getItem("voted") !== "true"
-          ) {
-            // Submit data to backend using axios
-            this.$axios
-              .post(
-                "data.php",
-                this.$qs.stringify({
-                  country: country,
-                })
-              )
-              .then((response) => {
-                console.log(response.data);
-                if (response.data.status === "success") {
-                  localStorage.setItem("voted", "true");
-                  eventBus.emit('update');
-                  //alert("Data submitted successfully");
+              if (
+                !localStorage.getItem("voted") ||
+                localStorage.getItem("voted") !== "true"
+              ) {
+                // Submit data to backend using axios
+                this.$axios
+                  .post(
+                    "data.php",
+                    this.$qs.stringify({
+                      country: country,
+                    })
+                  )
+                  .then((response) => {
+                    console.log(response.data);
+                    if (response.data.status === "success") {
+                      localStorage.setItem("voted", "true");
+                      eventBus.emit("update");
+                      //alert("Data submitted successfully");
 
-                  // Clear existing overlays
-                  map.overlays.forEach((overlay) => map.removeOverlay(overlay));
+                      // Clear existing overlays
+                      map.overlays.forEach((overlay) =>
+                        map.removeOverlay(overlay)
+                      );
 
-                  window.mapkit.importGeoJSON(
-                    "https://alex.polan.sk/people-map/countries.php",
-                    geoJSONParserDelegate
-                  );
-                } else {
-                  alert("Error: " + response.data.message);
-                }
-              })
-              .catch((error) => {
-                console.error("Error:", error);
-              });
-          } else {
-            alert("You have already selected a country.");
+                      window.mapkit.importGeoJSON(
+                        "https://alex.polan.sk/people-map/countries.php",
+                        geoJSONParserDelegate
+                      );
+                    } else {
+                      alert("Error: " + response.data.message);
+                    }
+                  })
+                  .catch((error) => {
+                    console.error("Error:", error);
+                  });
+              } else {
+                alert("You have already selected a country.");
+              }
+            }
+          }
+        }
+      });
+
+      map.element.addEventListener("click", (event) => {
+        if (!event.shiftKey) {
+          return;
+        }
+
+        this.isPlacingPin = true;
+
+        let coordinate = map.convertPointOnPageToCoordinate(
+          new DOMPoint(event.pageX, event.pageY)
+        );
+
+        let title = prompt("Ahoi! How do you want to name your pin:");
+        if (!title == null || !title == "") {
+          if (event.shiftKey) {
+            this.$axios.post("pins.php", {
+              latitude: coordinate.latitude,
+              longitude: coordinate.longitude,
+              title: title,
+            });
+            clickAnnotation = new MarkerAnnotation(coordinate, {
+              title: title,
+            });
+            map.addAnnotation(clickAnnotation);
+            setTimeout(() => {
+              this.isPlacingPin = false;
+            }, 1000);
           }
         }
       });
@@ -269,11 +362,11 @@ html {
 .app-description {
   font-size: 1.2em;
   color: #fff;
-  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
-  max-width: 800px;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+  max-width: 900px;
   margin-left: auto;
   margin-right: auto;
-  line-height: 1.5;
+  line-height: 1.25;
   padding: 0 20px;
   margin-top: 5px;
 }
@@ -282,5 +375,10 @@ html {
 
 .mk-top-right-controls-container {
   z-index: 1010;
+}
+
+.country-hover {
+  cursor: pointer;
+  fill: rgba(255, 0, 0, 0.5); /* Change the color and opacity as needed */
 }
 </style>
